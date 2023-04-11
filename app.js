@@ -85,16 +85,23 @@ const flowDiscord = addKeyword(['discord']).addAnswer(
     [flowSecundario]
 )
 
-const flowBuscarProducto = addKeyword(['buscar']).addAnswer('Por favor, escribe el nombre del producto que deseas buscar:')
-    .addAnswer(async (ctx) => {
+const flowBuscarProducto = addKeyword(['buscar'])
+  .addAnswer('Por favor, escribe el nombre del producto que deseas buscar:')
+  .addAnswer(async (ctx) => {
     const producto = ctx.answer;
+    console.log('Producto buscado:', producto);
+
     const resultados = await buscarProducto(producto);
+    console.log('Resultados:', resultados);
+
     let respuesta = '';
 
     resultados.forEach((resultado) => {
+      console.log('Resultado:', resultado);
       respuesta += `Título: ${resultado.titulo}\nPrecio: ${resultado.precio}\nEnlace: ${resultado.enlace}\n\n`;
     });
 
+    console.log('Respuesta:', respuesta);
     return respuesta;
   });
 
