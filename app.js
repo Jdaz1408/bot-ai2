@@ -5,9 +5,31 @@ const {
     addKeyword,
 } = require('@bot-whatsapp/bot')
 
+const axios = require('axios');
+const cheerio = require('cheerio');
 const QRPortalWeb = require('@bot-whatsapp/portal')
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MockAdapter = require('@bot-whatsapp/database/mock')
+
+async function buscarProducto(producto) {
+  const urlBusqueda = `https://surtihogareselmana.com/?s=${producto}`;
+  const response = await axios.get(urlBusqueda);
+  const $ = cheerio.load(response.data);
+
+  const productos = $('div.entry-thumb.single-thumb');
+  const resultados = [];
+
+  for (let i = 0; i < productos.length; i++) {
+    const enlace = $(productos[i]).find('a').attr('href');
+    const detalles = await axios.get(enlace);
+    const $detalles = cheerio.load(detalles.data);
+    const titulo = $detalles('h1[itemprop="name"].product_title.entry-title').text();
+    const precio = $detalles('span.price-amount').text();
+    resultados.push({ titulo, precio, enlace });
+  }
+
+  return resultados;
+}
 
 const flowSecundario = addKeyword(['2', 'siguiente']).addAnswer([
     '📄 Aquí tenemos el flujo secundario',
@@ -64,18 +86,31 @@ const flowDiscord = addKeyword(['discord']).addAnswer(
 )
 
 const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
-    .addAnswer('🙌 Hola bienvenido a este *Chatbot*')
+    .addAnswer('🙌 Hola, que gusto atenderte en Surtihogares el Manáa')
     .addAnswer(
         [
-            'te comparto los siguientes links de interes sobre el proyecto',
-            '👉 *doc* para ver la documentación',
-            '👉 *gracias*  para ver la lista de videos',
-            '👉 *discord* unirte al discord',
+            '👉 Para buscar un Producto en nuestra tienda Escribe *Buscar*',
         ],
         null,
         null,
-        [flowDocs, flowGracias, flowTuto, flowDiscord]
+        [flowDocs, flowGracias, flowTuto, flowDiscord,flowBuscarProducto]
     )
+
+const flowBuscarProducto = addKeyword(['buscar'])
+  .addQuestion('Por favor, escribe el nombre del producto que deseas buscar:')
+  .addAnswer(async (ctx) => {
+    const producto = ctx.answer;
+    const resultados = await buscarProducto(producto);
+    let respuesta = '';
+
+    resultados.forEach((resultado) => {
+      respuesta += `Título: ${resultado.titulo}\nPrecio: ${resultado.precio}\nEnlace: ${resultado.enlace}\n\n`;
+    });
+
+    return respuesta;
+  });
+
+
 
 const main = async () => {
     const adapterDB = new MockAdapter()
