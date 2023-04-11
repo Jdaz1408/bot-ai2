@@ -12,24 +12,24 @@ const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MockAdapter = require('@bot-whatsapp/database/mock')
 
 async function buscarProducto(producto) {
-  const urlBusqueda = `https://surtihogareselmana.com/?s=${producto}`;
+  const urlBusqueda = `https://surtihogareselmana.com/?s=${encodeURIComponent(producto)}`;
   const response = await axios.get(urlBusqueda);
   const $ = cheerio.load(response.data);
 
   const productos = $('div.entry-thumb.single-thumb');
-  const resultados = [];
-
-  for (let i = 0; i < productos.length; i++) {
-    const enlace = $(productos[i]).find('a').attr('href');
+  const resultadosPromises = productos.map(async (i, elem) => {
+    const enlace = $(elem).find('a').attr('href');
     const detalles = await axios.get(enlace);
     const $detalles = cheerio.load(detalles.data);
     const titulo = $detalles('h1[itemprop="name"].product_title.entry-title').text();
     const precio = $detalles('span.price-amount').text();
-    resultados.push({ titulo, precio, enlace });
-  }
+    return { titulo, precio, enlace };
+  });
 
+  const resultados = await Promise.all(resultadosPromises.toArray());
   return resultados;
 }
+
 
 const flowBuscarProducto = addKeyword(['buscar'])
   .addAnswer('Por favor, escribe el nombre del producto que deseas buscar:')
