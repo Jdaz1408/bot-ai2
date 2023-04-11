@@ -85,17 +85,6 @@ const flowDiscord = addKeyword(['discord']).addAnswer(
     [flowSecundario]
 )
 
-const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
-    .addAnswer('🙌 Hola, que gusto atenderte en Surtihogares el Manáa')
-    .addAnswer(
-        [
-            '👉 Para buscar un Producto en nuestra tienda Escribe *Buscar*',
-        ],
-        null,
-        null,
-        [flowDocs, flowGracias, flowTuto, flowDiscord,flowBuscarProducto]
-    )
-
 const flowBuscarProducto = addKeyword(['buscar'])
   .addQuestion('Por favor, escribe el nombre del producto que deseas buscar:')
   .addAnswer(async (ctx) => {
@@ -109,6 +98,18 @@ const flowBuscarProducto = addKeyword(['buscar'])
 
     return respuesta;
   });
+
+
+const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
+    .addAnswer('🙌 Hola, que gusto atenderte en Surtihogares el Manáa')
+    .addAnswer(
+        [
+            '👉 Para buscar un Producto en nuestra tienda Escribe *Buscar*',
+        ],
+        null,
+        null,
+        [flowDocs, flowGracias, flowTuto, flowDiscord,flowBuscarProducto]
+    )
 
 
 
