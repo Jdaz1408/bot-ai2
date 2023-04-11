@@ -85,9 +85,8 @@ const flowDiscord = addKeyword(['discord']).addAnswer(
     [flowSecundario]
 )
 
-const flowBuscarProducto = addKeyword(['buscar'])
-  .addQuestion('Por favor, escribe el nombre del producto que deseas buscar:')
-  .addAnswer(async (ctx) => {
+const flowBuscarProducto = addKeyword(['buscar']).addAnswer('Por favor, escribe el nombre del producto que deseas buscar:')
+    .addAnswer(async (ctx) => {
     const producto = ctx.answer;
     const resultados = await buscarProducto(producto);
     let respuesta = '';
