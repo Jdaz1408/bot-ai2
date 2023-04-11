@@ -48,8 +48,9 @@ const flowBuscarProducto = addKeyword(['buscar'])
     });
 
     console.log('Respuesta:', respuesta);
-    return respuesta;
+    return respuesta.toString();
   });
+
 
 
 const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
