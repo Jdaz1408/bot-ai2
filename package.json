@@ -9,6 +9,7 @@
     },
     "keywords": [],
     "dependencies": {
+        "typo-js": "^1.0.7",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
